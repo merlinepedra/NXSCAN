@@ -1,5 +1,8 @@
 # NXScan | Fast port scanning with fancy output
 
+## Screenshots
+![NXScan](NXScan.png)
+
 ## Instructions for running
 1. Make sure `nmap`, `naabu` & `xsltproc` are installed.<br>
 2. Run `python3 NXScan.py`. <br>
