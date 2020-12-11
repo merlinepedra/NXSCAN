@@ -49,7 +49,9 @@ nmpara = inputs.nmpara
 
 if(os.path.exists(output)==False):
     os.system("mkdir {0}".format(output))
-        
+
+if(os.path.exists(list)==False):
+    parser.error(RED + "[!] input doesn't exists" + CLEAR)
 
 if threads>3:
     threads=3
