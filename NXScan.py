@@ -101,7 +101,7 @@ if enum:
     print(YELLOW + "[*] enumerating using naabu"+ CLEAR)
     os.system("sudo naabu -iL {0} -s s -o {2}/enum-syn.txt {1}".format(list, napara, output))
     os.system("sudo naabu -iL {0} -s c -o {2}/enum-con.txt {1}".format(list, napara, output))
-    os.system("cat {2}/enum-syn.txt {2}/enum-con.txt | sort -u > {2}/enum.txt")
+    os.system("cat {0}/enum-syn.txt {0}/enum-con.txt | sort -u > {0}/enum.txt".format(output))
     list = "{0}/enum.txt".format(output)
 
 if scan:
