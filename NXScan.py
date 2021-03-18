@@ -13,7 +13,7 @@ GREEN='\033[92m'
 YELLOW='\033[93m'
 CLEAR='\x1b[0m'
 
-print(BLUE + "NXScan[1.2] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[1.3] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv)<2:
@@ -30,7 +30,7 @@ else:
     parser.add_option('--only-enumerate', action="store_false", dest="scan", help="only enumerate open ports using naabu", default=True)
     parser.add_option('--only-scan', action="store_false", dest="enumerate", help="only scan using nmap", default=True)
     parser.add_option('--nmap-param', action="store", dest="nmpara", help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
-    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports 1000 -rate 800 -timeout 1500 -stats -retries 5]", default="-top-ports 1000 -rate 800 -timeout 1500 -stats -retries 5  ")
+    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports 1000 -rate 500 -timeout 2000 -stats -retries 7]", default="-top-ports 1000 -rate 500 -timeout 2000 -stats -retries 7  ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
