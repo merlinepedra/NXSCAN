@@ -14,7 +14,7 @@ GREEN='\033[92m'
 YELLOW='\033[93m'
 CLEAR='\x1b[0m'
 
-print(BLUE + "NXScan[1.4] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[1.5] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv)<2:
@@ -28,11 +28,12 @@ else:
     parser.add_option('-T', '--template', action="store", dest="template", help="path to XSL template [default= ./nmap-bootstrap.xsl]", default="nmap-bootstrap.xsl")
     parser.add_option('-t', '--threads', action="store", dest="threads", help="threads [maximum/default= 3]", default=3)
     parser.add_option('-o', '--output', action="store", dest="output", help="directory for saving the results")
+    parser.add_option('-r', '--retries', action="store", dest="retries", help="number of times to enumerate [default= 3]", default=3)
     parser.add_option('--only-enumerate', action="store_false", dest="scan", help="only enumerate open ports using naabu", default=True)
     parser.add_option('--only-finger', action="store_true", dest="finger", help="only fingerprint services using nmap", default=False)
     parser.add_option('--only-scan', action="store_false", dest="enumerate", help="only scan using nmap", default=True)
     parser.add_option('--nmap-param', action="store", dest="nmpara", help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
-    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports 1000 -rate 500 -timeout 2000 -stats -retries 7]", default="-top-ports 1000 -rate 500 -timeout 2000 -stats -retries 7  ")
+    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports 1000 -rate 300 -timeout 3000 -stats -retries 6]", default="-top-ports 1000 -rate 300 -timeout 3000 -stats -retries 6  ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
@@ -49,6 +50,8 @@ finger = inputs.finger
 template = str(inputs.template)
 napara = inputs.napara
 nmpara = inputs.nmpara
+nmpara = inputs.nmpara
+retries = int(inputs.retries)
 
 if finger:
     scan = False
@@ -142,9 +145,10 @@ def generateHTML():
 
 if enum:
     print(YELLOW + "[*] enumerating using naabu"+ CLEAR)
-    os.system("sudo naabu -iL {0} -s s -o {2}/enum-syn.txt {1}".format(list, napara, output))
-    os.system("sudo naabu -iL {0} -s c -o {2}/enum-con.txt {1}".format(list, napara, output))
-    os.system("cat {0}/enum-syn.txt {0}/enum-con.txt | sort -u > {0}/enum.txt".format(output))
+    for i in range(0,retries):
+        os.system("sudo naabu -iL {0} -s s -o {2}/enum-syn-{3}.txt {1}".format(list, napara, output, i))
+        os.system("sudo naabu -iL {0} -s c -o {2}/enum-con-{3}.txt {1}".format(list, napara, output, i))
+    os.system("cat {0}/enum-syn-*.txt {0}/enum-con-*.txt | sort -u > {0}/enum.txt".format(output))
     list = "{0}/enum.txt".format(output)
 
 
