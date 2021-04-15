@@ -33,7 +33,7 @@ else:
     parser.add_option('--only-finger', action="store_true", dest="finger", help="only fingerprint services using nmap", default=False)
     parser.add_option('--only-scan', action="store_false", dest="enumerate", help="only scan using nmap", default=True)
     parser.add_option('--nmap-param', action="store", dest="nmpara", help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
-    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports 1000 -rate 300 -timeout 3000 -stats -retries 6]", default="-top-ports 1000 -rate 300 -timeout 3000 -stats -retries 6  ")
+    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports top-1000 -rate 300 -timeout 3000 -stats -retries 6]", default="-top-ports top-1000 -rate 300 -timeout 3000 -stats -retries 6  ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
