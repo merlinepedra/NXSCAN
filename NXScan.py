@@ -28,12 +28,12 @@ else:
     parser.add_option('-T', '--template', action="store", dest="template", help="path to XSL template [default= ./nmap-bootstrap.xsl]", default="nmap-bootstrap.xsl")
     parser.add_option('-t', '--threads', action="store", dest="threads", help="threads [maximum/default= 3]", default=3)
     parser.add_option('-o', '--output', action="store", dest="output", help="directory for saving the results")
-    parser.add_option('-r', '--retries', action="store", dest="retries", help="number of times to enumerate [default= 3]", default=3)
+    parser.add_option('-r', '--retries', action="store", dest="retries", help="number of times to enumerate [default= 1]", default=1)
     parser.add_option('--only-enumerate', action="store_false", dest="scan", help="only enumerate open ports using naabu", default=True)
     parser.add_option('--only-finger', action="store_true", dest="finger", help="only fingerprint services using nmap", default=False)
     parser.add_option('--only-scan', action="store_false", dest="enumerate", help="only scan using nmap", default=True)
     parser.add_option('--nmap-param', action="store", dest="nmpara", help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
-    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -p - -rate 500 -timeout 3000 -stats -retries 4]", default="-p - -rate 500 -timeout 3000 -stats -retries 4  ")
+    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports top-1000 -rate 500 -timeout 2500 -stats -retries 3]", default="-top-ports top-1000 -rate 500 -timeout 2500 -stats -retries 3  ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
