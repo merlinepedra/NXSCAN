@@ -14,7 +14,7 @@ GREEN='\033[92m'
 YELLOW='\033[93m'
 CLEAR='\x1b[0m'
 
-print(BLUE + "NXScan[1.5] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[1.6] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv)<2:
@@ -33,7 +33,7 @@ else:
     parser.add_option('--only-finger', action="store_true", dest="finger", help="only fingerprint services using nmap", default=False)
     parser.add_option('--only-scan', action="store_false", dest="enumerate", help="only scan using nmap", default=True)
     parser.add_option('--nmap-param', action="store", dest="nmpara", help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
-    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -top-ports top-1000 -rate 300 -timeout 3000 -stats -retries 6]", default="-top-ports top-1000 -rate 300 -timeout 3000 -stats -retries 6  ")
+    parser.add_option('--naabu-param', action="store", dest="napara", help="naabu parameters [default= -p - -rate 500 -timeout 3000 -stats -retries 4]", default="-p - -rate 500 -timeout 3000 -stats -retries 4  ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
