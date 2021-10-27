@@ -14,7 +14,7 @@ GREEN = '\033[92m'
 YELLOW = '\033[93m'
 CLEAR = '\x1b[0m'
 
-print(BLUE + "NXScan[1.7] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[1.8] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv) < 2:
@@ -168,9 +168,9 @@ if enum:
     print(YELLOW + "[*] enumerating using naabu" + CLEAR)
     for i in range(0, retries):
         os.system(
-            "sudo naabu -iL {0} -s s -o {2}/enum-syn-{3}.txt {1}".format(list, napara, output, i))
+            "sudo naabu -l {0} -s s -o {2}/enum-syn-{3}.txt {1}".format(list, napara, output, i))
         os.system(
-            "sudo naabu -iL {0} -s c -o {2}/enum-con-{3}.txt {1}".format(list, napara, output, i))
+            "sudo naabu -l {0} -s c -o {2}/enum-con-{3}.txt {1}".format(list, napara, output, i))
     os.system(
         "cat {0}/enum-syn-*.txt {0}/enum-con-*.txt | sort -u > {0}/enum.txt".format(output))
     list = "{0}/enum.txt".format(output)
