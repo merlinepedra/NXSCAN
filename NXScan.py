@@ -7,6 +7,8 @@ import concurrent.futures
 from collections import defaultdict
 import xml.etree.ElementTree as ET
 import re
+import requests
+import socket
 
 BLUE = '\033[94m'
 RED = '\033[91m'
@@ -14,7 +16,7 @@ GREEN = '\033[92m'
 YELLOW = '\033[93m'
 CLEAR = '\x1b[0m'
 
-print(BLUE + "NXScan[1.8] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[1.9] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv) < 2:
@@ -41,10 +43,14 @@ else:
                       help="only fingerprint services using nmap", default=False)
     parser.add_option('--only-scan', action="store_false",
                       dest="enumerate", help="only scan using nmap", default=True)
+    parser.add_option('--only-shodan', action="store_true",
+                      dest="shodan", help="only scan using shodan", default=False)
+    parser.add_option('--ports', action="store", dest="ports",
+                      help="top-100,top-1000,full [default=top-1000]", default="-Pn -A -T5")
     parser.add_option('--nmap-param', action="store", dest="nmpara",
                       help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
     parser.add_option('--naabu-param', action="store", dest="napara",
-                      help="naabu parameters [default= -top-ports top-1000 -rate 500 -timeout 2500 -stats -retries 3 -scan-all-ips -exclude-cdn]", default="-top-ports top-1000 -rate 500 -timeout 2500 -stats -retries 3 -scan-all-ips -exclude-cdn ")
+                      help="naabu parameters [default= -rate 500 -timeout 2500 -stats -retries 3 -scan-all-ips -exclude-cdn]", default="-rate 500 -timeout 2500 -stats -retries 3 -scan-all-ips -exclude-cdn ")
 
 inputs, args = parser.parse_args()
 if not inputs.list:
@@ -58,13 +64,13 @@ threads = int(inputs.threads)
 enum = inputs.enumerate
 scan = inputs.scan
 finger = inputs.finger
+shodan = inputs.shodan
 template = str(inputs.template)
-napara = inputs.napara
-nmpara = inputs.nmpara
+napara = "-top-ports {0} {1}".format(inputs.ports, inputs.napara)
 nmpara = inputs.nmpara
 retries = int(inputs.retries)
 
-if finger:
+if finger or shodan:
     scan = False
     enum = False
 
@@ -77,6 +83,16 @@ if(os.path.exists(list) == False or os.stat(list).st_size == 0):
 if threads > 3:
     threads = 3
 
+shodanresult = []
+def shodanScan(target):
+    global shodanresult
+    sdat = requests.get("https://internetdb.shodan.io/"+socket.gethostbyname(target)).json()
+    shodanresult.append("{0} {1} {2} {3} {4} {5} {6}".format(target, sdat['ip'], sdat['ports'], sdat['cpes'], sdat['hostnames'], sdat['tags'], sdat['vulns']))
+    if verbose:
+        print(GREEN + "[VERBOSE] started scanning {0}".format(target) + CLEAR)
+    print(BLUE + "[+] completed scanning {0}".format(target) + CLEAR)
+    with open("{0}/shodan.txt".format(output), "w") as f:
+        f.writelines("%s\n" % line for line in shodanresult)
 
 def nmapScan(target):
     host = target.split(" ")[0]
@@ -175,6 +191,17 @@ if enum:
         "cat {0}/enum-syn-*.txt {0}/enum-con-*.txt | sort -u > {0}/enum.txt".format(output))
     list = "{0}/enum.txt".format(output)
 
+if shodan:
+    print(YELLOW + "[*] scanning using shodan" + CLEAR)
+    with open(list) as f:
+        domains = f.read().splitlines()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
+        try:
+            executor.map(shodanScan, domains)
+        except(KeyboardInterrupt, SystemExit):
+            print(RED + "[!] interrupted" + CLEAR)
+            executor.shutdown(wait=False)
+            sys.exit()
 
 if finger:
     print(YELLOW + "[*] fingerprinting using nmap" + CLEAR)
