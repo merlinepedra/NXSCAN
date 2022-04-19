@@ -16,7 +16,7 @@ GREEN = '\033[92m'
 YELLOW = '\033[93m'
 CLEAR = '\x1b[0m'
 
-print(BLUE + "NXScan[2.0] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[2.1] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv) < 2:
@@ -48,7 +48,7 @@ else:
     parser.add_option('--only-shodan-scan', action="store_true",
                       dest="shodans", help="only scan using shodan", default=False)
     parser.add_option('--ports', action="store", dest="ports",
-                      help="top-100,top-1000,full [default=top-1000]", default="top-1000")
+                      help="100,1000,full [default=1000]", default="1000")
     parser.add_option('--nmap-param', action="store", dest="nmpara",
                       help="nmap parameters [default= -Pn -A -T5]", default="-Pn -A -T5")
     parser.add_option('--naabu-param', action="store", dest="napara",
