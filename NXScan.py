@@ -9,6 +9,7 @@ import xml.etree.ElementTree as ET
 import re
 import requests
 import socket
+import ipaddress
 
 BLUE = '\033[94m'
 RED = '\033[91m'
@@ -16,7 +17,7 @@ GREEN = '\033[92m'
 YELLOW = '\033[93m'
 CLEAR = '\x1b[0m'
 
-print(BLUE + "NXScan[2.1] by ARPSyndicate" + CLEAR)
+print(BLUE + "NXScan[2.2] by ARPSyndicate" + CLEAR)
 print(YELLOW + "fast port scanning with fancy output" + CLEAR)
 
 if len(sys.argv) < 2:
@@ -97,8 +98,14 @@ def shodanScan(target):
     global shodansresult
     if verbose:
         print(GREEN + "[VERBOSE] started scanning {0}".format(target) + CLEAR)
+    ipi = ""
     try:
-        sdat = requests.get("https://internetdb.shodan.io/"+socket.gethostbyname(target)).json()
+        ipaddress.ip_address(target)
+        ipi = target
+    except ValueError:
+        ipi = socket.gethostbyname(target)
+    try:
+        sdat = requests.get("https://internetdb.shodan.io/"+ipi).json()
     except:
         return
     shodansresult.append("{0} {1} {2} {3} {4} {5} {6}".format(target, sdat['ip'], sdat['ports'], sdat['cpes'], sdat['hostnames'], sdat['tags'], sdat['vulns']))
@@ -111,8 +118,14 @@ def shodanEnum(target):
     global shodaneresult
     if verbose:
         print(GREEN + "[VERBOSE] started enumerating {0}".format(target) + CLEAR)
+    ipi = ""
     try:
-        sdat = requests.get("https://internetdb.shodan.io/"+socket.gethostbyname(target)).json()
+        ipaddress.ip_address(target)
+        ipi = target
+    except ValueError:
+        ipi = socket.gethostbyname(target)
+    try:
+        sdat = requests.get("https://internetdb.shodan.io/"+ipi).json()
     except:
         return
     for port in sdat['ports']:
@@ -211,9 +224,22 @@ if shodane:
     print(YELLOW + "[*] enumerating using shodan" + CLEAR)
     with open(list) as f:
         domains = f.read().splitlines()
+    ipas = []
+    for doms in domains:
+        try:
+            ipaddress.ip_network(doms)
+            ipas.extend([str(ip) for ip in ipaddress.IPv4Network(doms)])
+        except ValueError:
+            continue
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         try:
             executor.map(shodanEnum, domains)
+        except(KeyboardInterrupt, SystemExit):
+            print(RED + "[!] interrupted" + CLEAR)
+            executor.shutdown(wait=False)
+            sys.exit()
+        try:
+            executor.map(shodanEnum, ipas)
         except(KeyboardInterrupt, SystemExit):
             print(RED + "[!] interrupted" + CLEAR)
             executor.shutdown(wait=False)
@@ -224,9 +250,22 @@ if shodans:
     print(YELLOW + "[*] scanning using shodan" + CLEAR)
     with open(list) as f:
         domains = f.read().splitlines()
+    ipas = []
+    for doms in domains:
+        try:
+            ipaddress.ip_network(doms)
+            ipas.extend([str(ip) for ip in ipaddress.IPv4Network(doms)])
+        except ValueError:
+            continue
     with concurrent.futures.ThreadPoolExecutor(max_workers=threads) as executor:
         try:
             executor.map(shodanScan, domains)
+        except(KeyboardInterrupt, SystemExit):
+            print(RED + "[!] interrupted" + CLEAR)
+            executor.shutdown(wait=False)
+            sys.exit()
+        try:
+            executor.map(shodanScan, ipas)
         except(KeyboardInterrupt, SystemExit):
             print(RED + "[!] interrupted" + CLEAR)
             executor.shutdown(wait=False)
